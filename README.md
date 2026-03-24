@@ -3,6 +3,15 @@
 Aplicación web para explorar y descargar datos del mercado eléctrico español
 en tiempo real a través de la API pública de **Red Eléctrica de España (REE / ESIOS)**.
 
+Running demo en Streamlit Platform: [https://ree-esios.streamlit.app]()
+
+- Requiere lanzar el backend en local:
+
+```bash
+.venv\Scripts\activate           # Windows PowerShell
+uvicorn backend:app --reload --port 8000
+```
+
 ---
 
 ## Arquitectura
