@@ -75,6 +75,18 @@ for k, v in _DEFAULTS.items():
 
 
 # ---------------------------------------------------------------------------
+# Callbacks de widgets
+# ---------------------------------------------------------------------------
+def _on_indicator_select():
+    """on_change callback del selectbox de indicadores comunes."""
+    sel = st.session_state.get("indicator_sel", "")
+    if sel and any(sel.startswith(str(k)) for k in INDICADORES_COMUNES):
+        new_id = sel.split(" — ")[0].strip()
+        st.session_state.indicator_id       = new_id
+        st.session_state.indicator_id_input = new_id
+
+
+# ---------------------------------------------------------------------------
 # Helpers HTTP
 # ---------------------------------------------------------------------------
 def _headers() -> dict:
@@ -191,12 +203,11 @@ with st.sidebar:
 
     token_input = st.text_input(
         "Token",
-        value=st.session_state.token,
+        key="token",
         type="password",
         placeholder="Pega aquí tu token...",
         label_visibility="collapsed",
     )
-    st.session_state.token = token_input
 
     if st.button("✅ Validar token", use_container_width=True):
         if not token_input.strip():
@@ -342,11 +353,13 @@ with tab_series:
 
     with col_preset_ind:
         opciones = ["(selecciona un indicador común)"] + list(INDICADORES_COMUNES.values())
-        sel = st.selectbox("O elige un indicador común", opciones, label_visibility="visible")
-        if sel != opciones[0]:
-            # Extrae el ID de la cadena "600 — Precio..."
-            st.session_state.indicator_id = sel.split(" — ")[0].strip()
-            st.rerun()
+        st.selectbox(
+            "O elige un indicador común",
+            opciones,
+            key="indicator_sel",
+            label_visibility="visible",
+            on_change=_on_indicator_select,
+        )
 
     st.divider()
 
@@ -357,9 +370,14 @@ with tab_series:
         with col:
             if st.button(label, use_container_width=True, key=f"preset_{label}"):
                 now = datetime.utcnow()
-                st.session_state.start_date = (now - delta).strftime("%Y-%m-%d")
-                st.session_state.end_date   = now.strftime("%Y-%m-%d")
-                st.session_state.time_trunc = trunc
+                start_str = (now - delta).strftime("%Y-%m-%d")
+                end_str   = now.strftime("%Y-%m-%d")
+                st.session_state.start_date       = start_str
+                st.session_state.end_date         = end_str
+                st.session_state.time_trunc       = trunc
+                st.session_state.start_date_input = start_str
+                st.session_state.end_date_input   = end_str
+                st.session_state.time_trunc_input = trunc
                 st.rerun()
 
     # ── Controles de fecha y granularidad ────────────────────────────────────

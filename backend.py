@@ -128,11 +128,14 @@ def health():
 
 @app.post("/validate-token")
 async def validate_token(token: str = Header(..., alias="x-esios-token")):
-    """Verifica que el token ESIOS es válido instanciando el cliente y haciendo
-    una petición mínima (metadatos del indicador 600)."""
+    """Verifica que el token ESIOS es válido haciendo una petición autenticada
+    mínima (1 día de datos del indicador 1001 — Demanda real)."""
     def _check(tok: str) -> dict:
+        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
+        today     = datetime.utcnow().strftime("%Y-%m-%d")
         with _client(tok) as c:
-            c.indicators.get(600)
+            handle = c.indicators.get(1001)
+            handle.historical(yesterday, today, time_trunc="day")
         return {"valid": True, "message": "Token correcto ✓"}
 
     try:

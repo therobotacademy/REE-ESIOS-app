@@ -70,6 +70,7 @@ Necesitas **dos terminales** abiertas en paralelo.
 **Terminal 1 — Backend FastAPI:**
 
 ```bash
+.venv\Scripts\activate           # Windows PowerShell
 uvicorn backend:app --reload --port 8000
 ```
 
